@@ -473,15 +473,9 @@ class Builder
      */
     protected function insertShortURLIntoDatabase(): ShortURL
     {
-        $base_url = $this->baseUrl();
-
-        if (! empty($this->prefix())) {
-            $base_url .= "/{$this->prefix()}";
-        }
-
         return ShortURL::create([
             'destination_url'                => $this->destinationUrl,
-            'default_short_url'              => "{$base_url}/{$this->urlKey}",
+            'default_short_url'              => $this->buildDefaultShortUrl(),
             'url_key'                        => $this->urlKey,
             'single_use'                     => $this->singleUse,
             'forward_query_params'           => $this->forwardQueryParams,
@@ -579,6 +573,17 @@ class Builder
         if ($this->trackDeviceType === null) {
             $this->trackDeviceType = config('short-url.tracking.fields.device_type');
         }
+    }
+
+    protected function buildDefaultShortUrl(): string
+    {
+        $baseUrl = $this->baseUrl();
+
+        if (! empty($this->prefix())) {
+            $baseUrl .= "/{$this->prefix()}";
+        }
+
+        return "{$baseUrl}/{$this->urlKey}";
     }
 
     /**
